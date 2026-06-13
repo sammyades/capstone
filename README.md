@@ -18,9 +18,9 @@ The intention is to challenge myself by building an operational enterprise grade
 
 ## Complexity 
 The system's engineering depth is demonstrated through several critical layers that ensure security, speed, and structural integrity:
-** Relational Database Model:** Built with Django, the database handles asymmetric relationships, Cascading deletions, and explicit lookup foreign keys (User, Role, Lead, Deal, Activity and Task).
-** Asynchronous AJAX Actions:** The UI leverages JavaScript fetch API calls to transition sales leads through Kanban steps, add interactive call notes, and update statuses instantaneously without forcing full page reloads.
-** Granular Access Control:**  Data queries are filtered dynamically in Django views so team members see only their assigned or logged clients, while managers retain full global view over the corporate sales funnel.
+**Relational Database Model:** Built with Django, the database handles asymmetric relationships, Cascading deletions, and explicit lookup foreign keys (User, Role, Lead, Deal, Activity and Task).
+**Asynchronous AJAX Actions:** The UI leverages JavaScript fetch API calls to transition sales leads through Kanban steps, add interactive call notes, and update statuses instantaneously without forcing full page reloads.
+**Granular Access Control:**  Data queries are filtered dynamically in Django views so team members see only their assigned or logged clients, while managers retain full global view over the corporate sales funnel.
 **Front-end Responsiveness:** Custom CSS structures ensure that large interactive tables and detailed analytical layouts remain clean on both mobile and desktop screens.
 
 ##  File Structure and Written Code Descriptions
@@ -28,11 +28,11 @@ This section lists and explains the specific purpose of the files written for th
 
 ### Backend Architecture (`smartcrm/`)
 **smartcrm /models.py**: Contains the application database architecture. This includes the User model, Lead model (business entities), the Deal model (tracking pipeline metrics and stages), the Activities model (storing timestamped communication logs) and the Task (storing timestamped to-do logs).
-*smartcrm/views.py: This controls the core back-end server logic of the application. It contains python views for handling user authentication, deal/pipeline stage changes, RESTful API endpoints for asynchronous JavaScript components, and authorization enforcement rules.
-*smartcrm/urls.py: This maps the application endpoints. It defines paths for user entry points, individual dynamic lead and deal profiles, API routes for data fetching, and dashboard generation views.
-*smartcrm/serializer.py: This acts as the vital bridge between my database and the frontend of the application. It converts complex Django QuerySets and Model instances into native Python primitives.
-*smartcrm/forms.py: This manages user input collection, validation, and database storage for server-rendered web pages. It automatically handles CSRF (Cross-Site Request Forgery) protection to prevent malicious data injections into my CRM database.
-*Smartcrm/admin.py: This configures and controls the internal management dashboard used by managers, and administrators to assign roles and oversee data.
+**smartcrm/views.py**: This controls the core back-end server logic of the application. It contains python views for handling user authentication, deal/pipeline stage changes, RESTful API endpoints for asynchronous JavaScript components, and authorization enforcement rules.
+**smartcrm/urls.py**: This maps the application endpoints. It defines paths for user entry points, individual dynamic lead and deal profiles, API routes for data fetching, and dashboard generation views.
+**smartcrm/serializer.py**: This acts as the vital bridge between my database and the frontend of the application. It converts complex Django QuerySets and Model instances into native Python primitives.
+**smartcrm/forms.py**: This manages user input collection, validation, and database storage for server-rendered web pages. It automatically handles CSRF (Cross-Site Request Forgery) protection to prevent malicious data injections into my CRM database.
+**Smartcrm/admin.py**: This configures and controls the internal management dashboard used by managers, and administrators to assign roles and oversee data.
 
 ### Static Assets (`smartcrm/static/`)
 **`smartcrm/js/`**: This handles the interactive UI lifecycle. This file captures client-side events, tracks toggles, and initiates asynchronous HTTP requests via the Fetch API to save or update records in the background.
@@ -42,7 +42,7 @@ This section lists and explains the specific purpose of the files written for th
 The interface layer is split into specialized HTML views that extend a common layout. This holds the UI layout templates of the application:
 **`layout.html`**: The base shell for the entire web application. It includes global metadata, imports required stylesheet files, establishes navigation menus that adapt to a user's permission level, and mounts shared JavaScript modules.
 **`index.html`**: The central operational dashboard. It provides a visual summary of the sales funnel, aggregate pipeline values, urgent tasks, and recent activity updates to keep users aligned on priorities.
-*lead_detail.html`**: This shows the individual lead details, new log activity, and a historical timeline of logged activities.
+**lead_detail.html`**: This shows the individual lead details, new log activity, and a historical timeline of logged activities.
 **`lead.html`**:  Renders a comprehensive overview of all registered prospects, incorporating sorting parameters, pagination tools, and filtering fields to navigate large volumes of contacts efficiently. 
 **`add_lead.html`**: A clean workspace containing the validated creation form used to parse, clean, and register new customer entries into the core database.
 **`deal_detail.html`**: This shows the profile of the deal. This also features the deal status update as well as the adding of task to the deal.

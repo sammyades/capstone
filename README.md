@@ -42,7 +42,7 @@ This section lists and explains the specific purpose of the files written for th
 The interface layer is split into specialized HTML views that extend a common layout. This holds the UI layout templates of the application:
 **`layout.html`**: The base shell for the entire web application. It includes global metadata, imports required stylesheet files, establishes navigation menus that adapt to a user's permission level, and mounts shared JavaScript modules.
 **`index.html`**: The central operational dashboard. It provides a visual summary of the sales funnel, aggregate pipeline values, urgent tasks, and recent activity updates to keep users aligned on priorities.
-**lead_detail.html`**: This shows the individual lead details, new log activity, and a historical timeline of logged activities.
+**`lead_detail.html`**: This shows the individual lead details, new log activity, and a historical timeline of logged activities.
 **`lead.html`**:  Renders a comprehensive overview of all registered prospects, incorporating sorting parameters, pagination tools, and filtering fields to navigate large volumes of contacts efficiently. 
 **`add_lead.html`**: A clean workspace containing the validated creation form used to parse, clean, and register new customer entries into the core database.
 **`deal_detail.html`**: This shows the profile of the deal. This also features the deal status update as well as the adding of task to the deal.

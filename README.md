@@ -49,7 +49,7 @@ The interface layer is split into specialized HTML views that extend a common la
 **`deals_list.html`**: Displays categorized sales deals using toggleable UI tabs. Users can switch views between active open cycles, won accounts, and lost opportunities to inspect performance.
 **`task_detail.html`**: This features the task form for an individual deal. Each task will be submitted and be transferred to the task dashboard.
 **`task_dashboard.html`**: The central interface for task management. It organizes action items into toggleable tabs for pending and completed tasks, enabling teams to track outstanding deliverables.
-**`pagination`**: This component generates a responsive pagination navbar for navigating multi-page lists.
+**`pagination.html`**: This component generates a responsive pagination navbar for navigating multi-page lists.
 
 ## Tech Stack Used
 * Backend:  Django (Python)

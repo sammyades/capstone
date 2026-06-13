@@ -1,0 +1,120 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <!-- Breadcrumb navigation back to central panel -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'deals_dashboard' %}">Deals Central</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+
+        <!-- Danger Zone Action Card -->
+        <div class="d-flex justify-content-left w-100">
+            <div class="card border-danger mt-2 shadow-sm p-1 text-left w-auto">
+                <h5 class="text-danger mb-2">⚠️ Danger Zone</h5>
+                <p class="text-muted small mb-3">Deleting this deal is permanent.</p>
+                
+                <form action="{% url 'delete_deal' deal.id %}" method="POST" id="delete-deal-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-40 py-2 w-100">
+                        Delete Deal
+                    </button>
+                </form>
+            </div>
+        </div>
+        <!-- LEFT COLUMN: Deal Metadata and Information Details -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <div>
+                        <h2 class="mb-1 text-primary">{{ deal.lead.first_name }} {{ deal.lead.last_name }}</h2>
+                        <h5 class="text-muted mb-0">{{ deal.lead.company }}</h5>
+                    </div>
+                    <div>
+                        <!-- Dynamic Status Badge Display -->
+                        {% if deal.status == 'open' %}
+                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">Open Pipeline</span>
+                        {% elif deal.status == 'won' %}
+                            <span class="badge bg-success fs-6 px-3 py-2">Deal Won</span>
+                        {% else %}
+                            <span class="badge bg-danger fs-6 px-3 py-2">Deal Lost</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row fs-5 mt-4">
+                    <div class="col-sm-6 mb-3">
+                        <strong class="text-secondary d-block small uppercase">Financial Value</strong>
+                        <span class="fw-bold">${{ deal.amount }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <strong class="text-secondary d-block small uppercase">Current Stage</strong>
+                        <span class="badge bg-info text-dark">{{ deal.stage }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <strong class="text-secondary d-block small uppercase">Target Closing Date</strong>
+                        <span>{{ deal.expected_close_date }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <strong class="text-secondary d-block small uppercase">Contact Email</strong>
+                        <a href="mailto:{{ deal.lead.email }}" class="text-decoration-none">{{ deal.lead.email }}</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    
+        <!-- RIGHT COLUMN: Pipeline Action Toggles -->
+        <div class="col-md-4">
+            <div class="card border-primary shadow-sm p-4 text-center">
+                <h4 class="mb-3">Pipeline Actions</h4>
+                <p class="text-muted small">Update the win/loss status of this opportunity below to update sales tracking indexes.</p>
+                
+                {% if deal.status == 'open' %}
+                    <!-- Button Actions Displayed for Open Active Deals -->
+                    <div class="d-grid gap-2">
+                        <form action="{% url 'update_deal_status' deal.id 'won' %}" method="POST" class="status-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-2 py-2">
+                                🏆 Mark as Won
+                            </button>
+                        </form>
+                        
+                        <form action="{% url 'update_deal_status' deal.id 'lost' %}" method="POST" class="status-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-lg w-100 py-2">
+                                ❌ Mark as Lost
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <!-- Status Reset Button Container if Already Processed -->
+                    <div class="bg-light p-3 rounded">
+                        <p class="mb-2 text-muted fw-bold">Outcome Finalized</p>
+                        <form action="{% url 'update_deal_status' deal.id 'open' %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none">
+                                Reopen Pipeline Deal
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            
+        </div>
+        <!-- Add Task Button (Place this wherever your milestone list is located) -->
+            <div class="d-flex justify-content-left w-100">
+                <a href="{% url 'task_profile' deal.id %}?open_form=true" class="btn btn-primary">
+                    + Add Task To Deal
+                </a>
+            </div>
+    </div>
+</div>
+
+
+{% endblock %}

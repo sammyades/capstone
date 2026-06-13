@@ -1,0 +1,42 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+<div class="d-flex row g-0 vh-50 mt-n6 mx-n4" id="wrapper">
+    <!-- Left Side: Visual Branding -->
+    <div class="col-lg-4 d-none d-lg-flex bg-dark align-items-center justify-content-center text-white p-4">
+        <div class="text-center">
+            <h1 class="display-4 fw-bold">SMARTCRM</h1>
+            <p class="lead opacity-75">Manage your leads and close deals faster.</p>
+        </div>
+    </div>
+
+    <!-- Right Side: Login Form -->
+    <div class="col-lg-6 d-flex align-items-center justify-content-left">
+        <div class="p-5 w-100 bg-white" style="max-width: 500px;">
+            <div class="mb-4 text-center">
+                <h2 class="fw-bold">Welcome Back</h2>
+                <p class="text-muted">Enter your credentials to access your account</p>
+            </div>
+
+            {% if message %}
+                <div class="alert alert-danger border-0 shadow-sm">{{ message }}</div>
+            {% endif %}
+
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input autofocus class="form-control border-0 bg-light" type="text" name="username" id="user" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control border-0 bg-light" id="pass" placeholder="Password" required>
+                </div>
+                <input type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" value="Login">
+            </form>
+
+            <div class="mt-4 text-center">
+                <p class="text-muted">New here? <a href="{% url 'register' %}" class="text-primary text-decoration-none fw-bold">Create an account</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

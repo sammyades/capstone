@@ -1,0 +1,142 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+<!-- Inside lead_detail.html -->
+<div class="mb-3">
+    <a href="{% url 'lead' %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to All Leads
+    </a>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">
+        <h4 class="mb-0">Lead Details:</h4>
+    </div>
+    <div class="card-body">
+        <!-- Lead data goes here -->
+
+        <div class="container mt-4">
+            
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>First name:</strong> {{ lead.first_name }}</p>
+                            <p><strong>Last name:</strong> {{ lead.last_name }}</p>
+                            <p><strong>Email:</strong> {{ lead.email }}</p>
+                            <p><strong>Phone:</strong> {{ lead.phone }}</p>
+                            <p><strong>Company:</strong> {{ lead.company }}</p>
+                            <p><strong>Industry:</strong> {{ lead.industry }}</p>
+                            <p><strong>Status:</strong> {{ lead.get_status_display }}</p>
+                            <p><strong>Created:</strong> {{ lead.created_at|date:"M d, Y" }}</p>
+                        </div>
+                        
+                    </div>
+                </div>
+            
+        </div>
+
+        <!-- Activity/Interactions Timeline -->
+        <div class="col-md-8">
+            <!-- Log New Activity Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-pen me-2"></i>Log New Activity</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.type.label_tag }}
+                            {{ form.type }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.note.label_tag }}
+                            {{ form.note }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Activity</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Activity History</h5>
+                </div>
+                <div class="card-body">
+                    {% for note in activities %}
+                        <div class="mb-3 border-bottom pb-2">
+                            <small class="text-muted">{{ note.created_at|date:"M d, Y H:i" }}</small>
+                            <p class="mb-0"><strong>{{ note.get_type_display }}:</strong> {{ note.note }}</p>
+                        </div>
+                        <!-- Delete Form/Button -->
+                        <form action="{% url 'delete_activity' note.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this note?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link text-danger p-0">
+                                <i class="fas fa-trash-alt"> 🗑️ </i>
+                            </button>
+                        </form>
+                        
+                        
+                    {% empty %}
+                        <p class="text-muted">No activities recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6 text-end">
+            <!-- THE CONVERT BUTTON -->
+            
+            {% if lead.status == "converted" %}
+                <!-- Alert Box displayed for processed files -->
+                <div class="alert alert-info shadow-sm p-4 border-start border-info border-4" role="alert">
+                    <h5 class="alert-heading fw-bold">🤝 Converted Opportunity</h5>
+                    <p class="mb-0">This lead was successfully processed into your sales pipeline. The deal workspace is now active.</p>
+                    <hr>
+                    <!-- Optional: Link the user directly over to their deal profile -->
+                    {% if lead.deal.exists %} 
+                        <a href="{% url 'deal_profile' lead.deal.first.id %}" class="btn btn-sm btn-info mt-2 text-white">
+                            Open Connected Deal Workspace
+                        </a>
+                    {% else %}
+                        <span class="badge bd-secondary mt-2">No Active Deal</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <form action="{% url 'convert_to_deal' lead.id %}" method="POST" id="convert-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="amount">Deal Amount ($):</label>
+                        <input type="number" step="0.01" name="amount" id="amount" required class="form-control">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="stage" class="form-label fw-bold text-secondary">Pipeline Stage:</label>
+                        <select name="stage" id="stage" required class="form-select">
+                            {% for value, display_name in stage_choices %}
+                                <!-- The 'value' is saved to the DB (e.g., 'qualification'), 'display_name' is what the user sees -->
+                                <option value="{{ value }}" {% if value == "qualification" %}selected{% endif %}>
+                                    {{ display_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expected_close_date">Expected Close Date:</label>
+                        <input type="date" name="expected_close_date" id="expected_close_date" required class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-3">
+                        Convert to Deal
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

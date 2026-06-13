@@ -1,0 +1,132 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+
+<div class="container mt-4">
+    {% csrf_token %}
+    <!-- Header Block -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Deals Dashboard</h2>
+        <span class="badge bg-primary fs-6">Active Pipeline</span>
+    </div>
+
+    <!-- Nav tabs to jump between Open, Won, and Lost deals easily -->
+    <ul class="nav nav-tabs" id="dealTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="open-tab" data-bs-toggle="tab" data-bs-target="#open" type="button" role="tab" aria-controls="open" aria-selected="true">
+                Open Deals (<span id="count-open">{{ open_deals.count }}</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-success" id="won-tab" data-bs-toggle="tab" data-bs-target="#won" type="button" role="tab" aria-controls="won" aria-selected="false">
+                Won Deals (<span id="count-won">{{ won_deals.count }}</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link text-danger" id="lost-tab" data-bs-toggle="tab" data-bs-target="#lost" type="button" role="tab" aria-controls="lost" aria-selected="false">
+                Lost Deals (<span id="count-lost">{{ lost_deals.count }}</span>)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="dealTabsContent">
+        
+        <!-- OPEN DEALS TAB -->
+        <div class="tab-pane fade show active" id="open" role="tabpanel" aria-labelledby="open-tab">
+            <div class="row mt-3" id="container-open">
+                {% for deal in open_deals %}
+                    <div class="col-md-4 mb-3 deal-card-wrapper" id="deal-card-{{ deal.id }}">
+                        <div class="card h-100 border-start border-primary border-4 shadow-sm">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-primary">{{ deal.lead.first_name }} {{ deal.lead.last_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ deal.lead.company }}</h6>
+                                <hr>
+                                <p class="card-text mb-1"><strong>Value:</strong> $<span class="deal-amount">{{ deal.amount }}</span></p>
+                                <p class="card-text mb-1"><strong>Status:</strong> <span class="badge bg-info text-dark">{{ deal.status }}</span></p>
+                                <p class="card-text mb-3 text-muted"><small>Est. Close: {{ deal.expected_close_date }}</small></p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex gap-2 mb-2">
+                                        <button onclick="changeStatus('{{ deal.id }}', 'won')" class="btn btn-sm btn-success w-100">Mark Won</button>
+                                        <button onclick="changeStatus('{{ deal.id }}', 'lost')" class="btn btn-sm btn-danger w-100">Mark Lost</button>
+                                    </div>
+                                    <div class="d-grid">
+                                        <a href="{% url 'deal_profile' deal.id %}" class="btn btn-sm btn-outline-primary">View Deal Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5 text-muted empty-message">
+                        <p class="fs-5">No active converted deals at the moment.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- WON DEALS TAB -->
+        <div class="tab-pane fade" id="won" role="tabpanel" aria-labelledby="won-tab">
+            <div class="row mt-3" id="container-won">
+                {% for deal in won_deals %}
+                    <div class="col-md-4 mb-3 deal-card-wrapper" id="deal-card-{{ deal.id }}">
+                        <div class="card h-100 border-start border-success border-4 opacity-75">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-success">{{ deal.lead.first_name }} {{ deal.lead.last_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ deal.lead.company }}</h6>
+                                <hr>
+                                <p class="mb-1"><strong>Final Amount:</strong> $<span class="deal-amount">{{ deal.amount }}</span></p>
+                                <p class="text-muted mb-3"><small>Company: {{ deal.lead.company }}</small></p>
+
+                                <div class="mt-auto">
+                                    <div class="d-flex gap-2 mb-2">
+                                        <button onclick="changeStatus('{{ deal.id }}', 'open')" class="btn btn-sm btn-outline-secondary w-100">Reopen Deal</button>
+                                    </div>
+                                    <div class="d-grid">
+                                        <a href="{% url 'deal_profile' deal.id %}" class="btn btn-sm btn-outline-primary">View Deal Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5 text-muted empty-message">
+                        <p>No won deals recorded yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- LOST DEALS TAB -->
+        <div class="tab-pane fade" id="lost" role="tabpanel" aria-labelledby="lost-tab">
+            <div class="row mt-3" id="container-lost">
+                {% for deal in lost_deals %}
+                    <div class="col-md-4 mb-3 deal-card-wrapper" id="deal-card-{{ deal.id }}">
+                        <div class="card h-100 border-start border-danger border-4 opacity-75">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-danger">{{ deal.lead.first_name }} {{ deal.lead.last_name }}</h5>
+                                <p class="mb-1"><strong>Lost Value:</strong> $<span class="deal-amount">{{ deal.amount }}</span></p>
+                                <p class="text-muted mb-3"><small>Company: {{ deal.lead.company }}</small></p>
+                                
+                                <div class="mt-auto">
+                                    <button onclick="changeStatus('{{ deal.id }}', 'open')" class="btn btn-sm btn-outline-secondary w-100">Reopen Deal</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5 text-muted empty-message">
+                        <p>No lost deals recorded.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include "smartcrm/pagination.html" %}
+
+
+{% endblock %}

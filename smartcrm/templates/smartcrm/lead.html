@@ -1,0 +1,118 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Leads</h2>
+        <a href="{% url 'add_lead' %}" class="btn btn-primary">+ Add New Lead</a>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <!-- Wrap in a GET form targeting your list view URL -->
+            <form action="{% url 'lead' %}" method="GET">
+                <div class="input-group">
+                    <button class="input-group-text bg-white"><i class="fas fa-search">
+                        <svg height="21" viewBox="0 0 21 21" width="25" xmlns="https://www.w3.org/TR/SVG">
+                            <g fill="none" fill-rule="evenodd" stroke="#808080" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="8.5" cy="8.5" r="5" /><path d="m17.571 17.5-5.571-5.5" /></g></svg></i></button>
+                    <!-- Added name="q" and value retention -->
+                    <input type="text" name="q" id="leadSearch" class="form-control" 
+                        placeholder="Search leads by first name, lastname, email, or status..." 
+                        value="{{ request.GET.q }}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded">
+        <form action="{% url 'delete_multiple_leads' %}" method="POST" onsubmit="return confirm('Are you sure you want to delete the selected leads?');">
+            {% csrf_token %}
+            
+            <!-- Action Button above the table -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-danger">Delete Selected</button>
+            </div>    
+        
+            <table class="table table-hover align-middle bg-white">
+                <thead class="table-light">
+                    <tr>
+                        <th>
+                            <!-- Select All Checkbox -->
+                            <input type="checkbox" id="select-all">
+                        </th>
+                        <th>First name</th>
+                        <th>Last name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Company</th>
+                        <th>Industry</th>
+                        <th>Status</th>
+                        <th>Created at</th>
+                        <th class="text-end">Actions</th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td>
+                            <!-- Individual Row Checkbox (value is the lead's ID) -->
+                            <input type="checkbox" name="lead_ids" value="{{ lead.id }}" class="lead-checkbox">
+                        </td>
+                        <td><strong>{{ lead.first_name }}</strong></td>
+                        <td><strong>{{ lead.last_name }}</strong></td>
+                        <td>{{ lead.email }}</td>
+                        <td>{{ lead.phone }}</td>
+                        <td>{{ lead.company }}</td>
+                        <td>{{ lead.industry }}</td>
+                        <td>
+                            <!-- Dynamic color badges based on status -->
+                            <span class="badge rounded-pill 
+                                {% if lead.status == 'NEW' %}bg-info
+                                {% elif lead.status == 'CONTACTED' %}bg-warning
+                                {% elif lead.status == 'QUALIFIED' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ lead.get_status_display }}
+                            </span>
+                        <td>{{ lead.created_at|date:"M d, Y" }}</td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <!-- View Button -->
+                                <a href="{% url 'lead_detail' lead.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                
+                                <!-- Safe Delete Form -->
+                                <form action="{% url 'delete_lead' lead.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this lead?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No leads found. Click "+ Add New Lead" to get started!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+{% include "smartcrm/pagination.html" %}
+
+<script>
+    document.getElementById('select-all').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.lead-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+
+{% endblock %}

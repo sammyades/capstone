@@ -1,0 +1,15 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Add New Lead</h2>
+    <form method="post" class="shadow p-4 rounded bg-light" action="{% url 'add_lead' %}" id="lead-form">
+        {% csrf_token %}  <!-- Security token required by Django -->
+        
+        {{ form.as_p }}   <!-- Renders fields inside <p> tags -->
+        
+        <button type="submit" class="btn btn-primary" id="save-lead">Save Lead</button>
+        <a href="{% url 'lead' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

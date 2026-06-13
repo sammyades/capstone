@@ -1,0 +1,80 @@
+{% extends "smartcrm/layout.html" %}
+
+{% block body %}
+
+<div class="container mt-4">
+    <!-- Breadcrumb or header navigation back to the deal profile -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Task Manager</h2>
+            <p class="text-muted mb-0">Deal: <strong>{{ deal.lead.first_name }} {{ deal.lead.last_name }}</strong> ({{ deal.lead.company }})</p>
+        </div>
+         <a href="{% url 'tasks_dashboard' %}" class="btn btn-outline-secondary">← Back to All Tasks</a> 
+    </div>
+
+
+    <div class="row">
+        <!-- Create Task Form Component -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm position-sticky" style="top: 20px;">
+                <div class="card-header bg-primary text-white">➕ Create New Task</div>
+                <div class="card-body">
+                    <form action="{% url 'add_task' deal.id %}" method="POST" id="task-form">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="text-danger small">{{ field.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Save Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Tracking Columns -->
+        <div class="col-md-8">
+            <!-- Pending tasks inside this single deal profile -->
+            <h4 class="mb-3 text-warning"> Pending Tasks ({{ pending_tasks.count }})</h4>
+            <ul class="list-group mb-4 shadow-sm">
+                {% for task in pending_tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold">{{ task.title }}</span>
+                            <p class="text-muted mb-0 small">{{ task.description|default:"" }}</p>
+                        </div>
+                        <a href="{% url 'toggle_task_status' task.id %}" class="btn btn-sm btn-success">Done</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">No pending tasks for this deal.</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Completed tasks inside this single deal profile -->
+            <h4 class="mb-3 text-success"> Completed ({{ completed_tasks.count }})</h4>
+            <ul class="list-group shadow-sm">
+                {% for task in completed_tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                        <div>
+                            <del class="text-muted fw-bold">{{ task.title }}</del>
+                            <p class="text-muted mb-0 small"><del>{{ task.description|default:"" }}</del></p>
+                        </div>
+                        <a href="{% url 'toggle_task_status' task.id %}" class="btn btn-sm btn-outline-secondary">Undo</a>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-center text-muted">No completed tasks yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

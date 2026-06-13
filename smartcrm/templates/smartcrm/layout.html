@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CRM Dashboard</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'smartcrm/css/bootstrap.min.css' %}" rel="stylesheet">
+        
+        
+    </head>
+
+    <body class="bg-light">
+        <div class="d-flex" id="wrapper">
+            <!-- sidebar -->
+            {% if user.is_authenticated %}
+            <div id="sidebar-wrapper" class="bg-dark text-white flex-shrink-0" style="width: 250px; min-height: 100vh;">
+                
+                <div class="sidebar-heading p-4 fs-4 fw-bold border-bottom border-secondary">SMARTCRM</div> 
+
+                <div>
+                
+                    <a href="{% url 'index' %}" class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 px-4 {% if active_page == 'dashboard' %}active{% endif %}">
+                        <i class="bi bi-bar-chart me-2" onclick="navigate('dashboard')"></i> Dashboard
+                    </a>
+                    <a href="{% url 'lead' %}" class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 px-4 {% if active_page == 'leads' %}active{% endif %}">
+                        <i class="bi bi-bar-chart me-2" onclick="navigate('leads')"></i> Lead
+                    </a>
+                    <a href="{% url 'deals_dashboard' %}" class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 px-4 {% if active_page == 'analytics' %}active{% endif %}">
+                        <i class="bi bi-bar-chart me-2" onclick="navigate('deals')"></i> Deal
+                    </a>
+                    <a href="{% url 'tasks_dashboard' %}" class="list-group-item list-group-item-action bg-dark text-white border-0 py-3 px-4 {% if active_page == 'tasks' %}active{% endif %}">
+                        <i class="bi bi-bar-chart me-2" onclick="navigate('tasks')"></i> Tasks
+                    </a>
+    
+                </div>
+            
+            {% endif %}
+        </div>
+        <main id="page-content-wrapper" class="flex-grow-1 main">
+            {% if user.is_authenticated %}
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom p-3">
+                <div class="container-fluid">
+                    <span class="navbar-text">Welcome, <strong>{{ user.username }}</strong></span>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                </div>
+            </nav>
+            {% endif %}
+
+            <div class="container mt-3">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Actual Dashboard Content -->
+            <section id="app" class="container-fluid p-4">
+                {% block body %}{% endblock %}
+            </section>
+        </main>
+      
+        <script src="{% static 'smartcrm/js/bootstrap.bundle.min.js' %}"></script>
+
+    
+        <script src="{% static 'smartcrm/js/smartcrm.js' %}"></script>
+    </body>
+</html>

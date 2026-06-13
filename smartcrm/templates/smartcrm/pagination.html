@@ -1,0 +1,39 @@
+<!-- Pagination Navigation Block -->
+{% if leads.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        
+        <!-- Previous Page Arrow -->
+        {% if leads.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ leads.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        <!-- Page Numbers List -->
+        {% for i in leads.paginator.page_range %}
+            {% if leads.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Page Arrow -->
+        {% if leads.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ leads.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}
